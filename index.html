@@ -1,0 +1,1356 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>Jealous Husband and Best First Search</title>
+
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/ntnuerc.css">
+
+        <!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+        <script src="https://daybrush.com/scenejs/release/latest/dist/scene.min.js"></script>
+		
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement( 'link' );
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+            document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+        <script src="js/ntnu.js"></script>
+    </head>
+    <body>
+        <div class="reveal">
+        <div class="slides">
+            
+<section id="slide_00002_frag_00001" data-state="slide_00002_frag_00001">
+
+
+<!-- Header -->
+  
+
+<!-- Background -->
+
+
+<!-- Slide -->
+<div class="jb-slide">
+
+<div class="jb-output-code jb-render">
+
+<!-- start embedded style -->
+
+<!-- end embedded style -->
+<div class="jb-output jb-render">
+
+<h1>Jealous Husband and Best First Search</h1>
+
+<div>
+
+<p>
+      Jacky Baltes<br>
+      National Taiwan Normal University<br>
+      Taipei, Taiwan<br>
+      <a href="mailto:jacky.baltes@ntnu.edu.tw">jacky.baltes@ntnu.edu.tw</a><br>
+</p>
+
+20 November 2020
+</div>
+</div><!-- end of jb-output jb-render -->
+</div><!-- end of jb-output-code jb-render -->
+
+
+</div>
+<!-- Footer -->
+
+<div class="jb-footer-left plain">
+    <span id="id-342590aa-c9bd-4d22-9ab7-567857fcb5c5" ><span id="id-342590aa-c9bd-4d22-9ab7-567857fcb5c5"><img id="img-id-342590aa-c9bd-4d22-9ab7-567857fcb5c5"     src="assets/images/logo.png"/></span>
+</span>
+
+</div>
+<div class="jb-footer-right plain">
+    <span id="id-ba8c3b9e-5d33-4e53-9da3-5fe26d2183a6" ><span id="id-ba8c3b9e-5d33-4e53-9da3-5fe26d2183a6"><img id="img-id-ba8c3b9e-5d33-4e53-9da3-5fe26d2183a6" width="162" height="138"   src="assets/images/robbi.png"/></span>
+</span>
+
+</div>
+
+<aside class="notes">
+
+</aside>
+
+
+
+</section>
+<section id="slide_00003_frag_00001" data-state="slide_00003_frag_00001">
+
+
+<!-- Header -->
+  
+
+<!-- Background -->
+
+
+<!-- Slide -->
+<div class="jb-slide">
+
+<div class="jb-output-code jb-render">
+
+<!-- start embedded style -->
+
+<!-- end embedded style -->
+<div class="jb-output jb-render">
+
+<h1>Jealous Husband Problem</h1>
+
+<div class="jb-text">
+<ul>
+<li>There are three couples that want to cross a river</li>
+<li>There is a small boat
+which can take only two people at a time</li>
+<li>The husbands are very jealous and do not want to leave their
+wives in the presence of another husband without them being there</li>
+<li>Help them cross the river</li>
+</ul>
+</div>
+</div><!-- end of jb-output jb-render -->
+</div><!-- end of jb-output-code jb-render -->
+
+
+</div>
+<!-- Footer -->
+
+<div class="jb-footer-left plain">
+    <span id="id-5cac756a-ea5b-440d-95f9-6d2b4a5a3b6a" ><span id="id-5cac756a-ea5b-440d-95f9-6d2b4a5a3b6a"><img id="img-id-5cac756a-ea5b-440d-95f9-6d2b4a5a3b6a"     src="assets/images/logo.png"/></span>
+</span>
+
+</div>
+<div class="jb-footer-right plain">
+    <span id="id-ae7fd0e5-31d5-4a10-b4a7-ab5596a9c3d6" ><span id="id-ae7fd0e5-31d5-4a10-b4a7-ab5596a9c3d6"><img id="img-id-ae7fd0e5-31d5-4a10-b4a7-ab5596a9c3d6" width="162" height="138"   src="assets/images/robbi.png"/></span>
+</span>
+
+</div>
+
+<aside class="notes">
+
+</aside>
+
+
+
+</section>
+<section id="slide_00004_frag_00001" data-state="slide_00004_frag_00001">
+
+
+<!-- Header -->
+  
+
+<!-- Background -->
+
+
+<!-- Slide -->
+<div class="jb-slide">
+<div class="jb-input jb-render jb-code" style="text-align:center">
+
+<!-- start embedded style -->
+
+<!-- end embedded style -->
+<div class="jb-input-code jb-render">
+<div class="highlight" style="background: #f8f8f8; color:#101010;display=inline-block;"><pre style="line-height: 125%"><span></span>BOAT,H1,W1,H2,W2,H3,W3, NUM_OBJECTS <span style="color: #666666">=</span> <span style="color: #666666">0</span>,<span style="color: #666666">1</span>,<span style="color: #666666">2</span>,<span style="color: #666666">3</span>,<span style="color: #666666">4</span>,<span style="color: #666666">5</span>,<span style="color: #666666">6</span>,<span style="color: #666666">7</span>
+LEFT, RIGHT <span style="color: #666666">=</span> <span style="color: #666666">0</span>, <span style="color: #666666">1</span>
+
+initial <span style="color: #666666">=</span> [ LEFT <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">range</span>(NUM_OBJECTS) ]
+
+objNames <span style="color: #666666">=</span> [ <span style="color: #BA2121">&quot;Boat&quot;</span>, <span style="color: #BA2121">&quot;Husband 1&quot;</span>, <span style="color: #BA2121">&quot;Wife 1&quot;</span>, <span style="color: #BA2121">&quot;Husband 2&quot;</span>, <span style="color: #BA2121">&quot;Wife 2&quot;</span>, <span style="color: #BA2121">&quot;Husband 3&quot;</span>, <span style="color: #BA2121">&quot;Wife 3&quot;</span> ]
+
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">isValid</span>( state ):
+    result <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">True</span>
+    <span style="color: #008000; font-weight: bold">for</span> w <span style="color: #AA22FF; font-weight: bold">in</span> [ W1, W2, W3 ]:
+        <span style="color: #008000; font-weight: bold">if</span> state[w] <span style="color: #666666">!=</span> state[w<span style="color: #666666">-1</span>]:
+            <span style="color: #008000; font-weight: bold">for</span> h <span style="color: #AA22FF; font-weight: bold">in</span> [ H1, H2, H3 ]:
+                <span style="color: #008000; font-weight: bold">if</span> h <span style="color: #666666">!=</span> w <span style="color: #666666">-</span> <span style="color: #666666">1</span>:
+                    <span style="color: #008000; font-weight: bold">if</span> state[h] <span style="color: #666666">==</span> state[w]:
+                        result <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">False</span>
+    <span style="color: #008000; font-weight: bold">return</span> result
+
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">jealousHusbandsSuccessors</span>( state, hist <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">None</span> ):
+    children <span style="color: #666666">=</span> []
+    <span style="color: #008000; font-weight: bold">for</span> p1 <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">range</span>(<span style="color: #666666">1</span>,NUM_OBJECTS):
+        <span style="color: #008000; font-weight: bold">if</span> state[p1] <span style="color: #666666">==</span> state[BOAT]:
+            ns <span style="color: #666666">=</span> state<span style="color: #666666">.</span>copy()
+            ns[p1] <span style="color: #666666">=</span> <span style="color: #666666">1</span> <span style="color: #666666">-</span> state[p1]
+            ns[BOAT] <span style="color: #666666">=</span> <span style="color: #666666">1</span> <span style="color: #666666">-</span> state[BOAT]
+            <span style="color: #008000; font-weight: bold">if</span> isValid(ns):
+                children<span style="color: #666666">.</span>append( ns )
+            <span style="color: #008000; font-weight: bold">for</span> p2 <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">range</span>( p1<span style="color: #666666">+1</span>, NUM_OBJECTS ):
+                <span style="color: #008000; font-weight: bold">if</span> state[p1] <span style="color: #666666">==</span> state[p2]:
+                    ns <span style="color: #666666">=</span> state<span style="color: #666666">.</span>copy()
+                    ns[p1] <span style="color: #666666">=</span> <span style="color: #666666">1</span> <span style="color: #666666">-</span> state[p1]
+                    ns[p2] <span style="color: #666666">=</span> <span style="color: #666666">1</span> <span style="color: #666666">-</span> state[p2]
+                    ns[BOAT] <span style="color: #666666">=</span> <span style="color: #666666">1</span> <span style="color: #666666">-</span> state[BOAT]
+                    <span style="color: #008000; font-weight: bold">if</span> isValid( ns ):
+                        children<span style="color: #666666">.</span>append(ns)
+    <span style="color: #008000; font-weight: bold">return</span> children
+
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">stateToStr</span>( state ):
+    leftObjs <span style="color: #666666">=</span> []
+    rightObjs <span style="color: #666666">=</span> []
+
+    <span style="color: #008000; font-weight: bold">for</span> o <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">range</span>(<span style="color: #008000">len</span>(state)):
+        <span style="color: #008000; font-weight: bold">if</span> state[o] <span style="color: #666666">==</span> LEFT:
+            leftObjs<span style="color: #666666">.</span>append( objNames[o] )
+        <span style="color: #008000; font-weight: bold">else</span>:
+            rightObjs<span style="color: #666666">.</span>append( objNames[o] )
+    <span style="color: #008000; font-weight: bold">return</span> <span style="color: #BA2121">&quot;[&quot;</span> <span style="color: #666666">+</span> <span style="color: #BA2121">&quot;,&quot;</span><span style="color: #666666">.</span>join( leftObjs) <span style="color: #666666">+</span> <span style="color: #BA2121">&quot;],[&quot;</span> <span style="color: #666666">+</span> <span style="color: #BA2121">&quot;,&quot;</span><span style="color: #666666">.</span>join( rightObjs) <span style="color: #666666">+</span> <span style="color: #BA2121">&quot;]&quot;</span>
+
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">jealousHusbandsIsGoal</span>( state ):
+    result <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">True</span>
+    <span style="color: #008000; font-weight: bold">for</span> o <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">range</span>(<span style="color: #008000">len</span>(state)):
+        <span style="color: #008000; font-weight: bold">if</span> state[o] <span style="color: #666666">!=</span> RIGHT:
+            result <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">False</span>
+            <span style="color: #008000; font-weight: bold">break</span>
+    <span style="color: #008000; font-weight: bold">return</span> result
+
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">search</span>( initial, successorFunc, isGoalFunc, dfs <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">True</span>, limit <span style="color: #666666">=</span> <span style="color: #666666">1000</span> ):
+    queue <span style="color: #666666">=</span> [ ( initial, [initial] ) ]
+    numNodes <span style="color: #666666">=</span> <span style="color: #666666">1</span>
+    maxQueue <span style="color: #666666">=</span> <span style="color: #666666">0</span>
+    sol <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">None</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&quot;Search started&quot;</span>, queue)
+    <span style="color: #008000; font-weight: bold">while</span>( <span style="color: #008000">len</span>( queue ) <span style="color: #666666">&gt;</span> <span style="color: #666666">0</span> ):
+        <span style="color: #408080; font-style: italic"># current, chist = queue[-1]</span>
+        <span style="color: #408080; font-style: italic"># queue = queue[0:-1]</span>
+        <span style="color: #408080; font-style: italic">#print(&quot;Q&quot;, queue)</span>
+        <span style="color: #008000; font-weight: bold">if</span> ( <span style="color: #008000">len</span>(queue) <span style="color: #666666">&gt;</span> maxQueue ):
+              maxQueue <span style="color: #666666">=</span> <span style="color: #008000">len</span>(queue)
+
+        current, chist <span style="color: #666666">=</span> queue<span style="color: #666666">.</span>pop()
+        
+        <span style="color: #408080; font-style: italic">#print(&quot;Num Nodes&quot;, numNodes)</span>
+        <span style="color: #408080; font-style: italic">#stateToStr( current )</span>
+        <span style="color: #008000; font-weight: bold">if</span> isGoalFunc( current ):
+            sol <span style="color: #666666">=</span> (numNodes, maxQueue, chist)
+            <span style="color: #008000; font-weight: bold">break</span>
+        <span style="color: #408080; font-style: italic">#print(&quot;current state&quot;, current, chist )</span>
+        <span style="color: #408080; font-style: italic">#print(&quot;queue&quot;, queue)</span>
+        children <span style="color: #666666">=</span> successorFunc( current )
+        <span style="color: #408080; font-style: italic">#print(&quot;children&quot;, children)</span>
+        <span style="color: #008000; font-weight: bold">for</span> c <span style="color: #AA22FF; font-weight: bold">in</span> children:
+            <span style="color: #008000; font-weight: bold">if</span> c <span style="color: #AA22FF; font-weight: bold">not</span> <span style="color: #AA22FF; font-weight: bold">in</span> chist:
+                <span style="color: #408080; font-style: italic">#print(&quot;Add child&quot;, stateToStr(c))</span>
+                <span style="color: #008000; font-weight: bold">if</span> dfs:
+                  insert_index <span style="color: #666666">=</span> <span style="color: #008000">len</span>(queue)
+                <span style="color: #008000; font-weight: bold">else</span>:
+                  insert_index <span style="color: #666666">=</span> <span style="color: #666666">0</span>
+
+                queue<span style="color: #666666">.</span>insert( insert_index, (c, chist <span style="color: #666666">+</span> [c] ))
+                numNodes <span style="color: #666666">=</span> numNodes <span style="color: #666666">+</span> <span style="color: #666666">1</span>
+                <span style="color: #008000; font-weight: bold">if</span> ( numNodes <span style="color: #666666">&gt;</span> limit ):
+                    <span style="color: #008000">print</span>(<span style="color: #BA2121">&quot;Search terminated with numNodes&quot;</span>, numNodes )
+                    <span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000; font-weight: bold">None</span>
+    <span style="color: #008000; font-weight: bold">return</span> sol
+</pre></div>
+
+</div><!-- end of jb-input-code jb-render -->
+
+</div>
+
+</div>
+<!-- Footer -->
+
+<div class="jb-footer-left plain">
+    <span id="id-5e348a3b-a766-4cff-abb7-c2ffbe41278f" ><span id="id-5e348a3b-a766-4cff-abb7-c2ffbe41278f"><img id="img-id-5e348a3b-a766-4cff-abb7-c2ffbe41278f"     src="assets/images/logo.png"/></span>
+</span>
+
+</div>
+<div class="jb-footer-right plain">
+    <span id="id-d7476cc0-3916-4016-b297-24412f270c17" ><span id="id-d7476cc0-3916-4016-b297-24412f270c17"><img id="img-id-d7476cc0-3916-4016-b297-24412f270c17" width="162" height="138"   src="assets/images/robbi.png"/></span>
+</span>
+
+</div>
+
+<aside class="notes">
+
+</aside>
+
+
+
+</section>
+<section id="slide_00005_frag_00001" data-state="slide_00005_frag_00001">
+
+
+<!-- Header -->
+  
+
+<!-- Background -->
+
+
+<!-- Slide -->
+<div class="jb-slide">
+<div class="jb-input jb-render jb-code" style="text-align:center">
+
+<!-- start embedded style -->
+
+<!-- end embedded style -->
+<div class="jb-input-code jb-render">
+<div class="highlight" style="background: #f8f8f8; color:#101010;display=inline-block;"><pre style="line-height: 125%"><span></span>sol <span style="color: #666666">=</span> search( initial, jealousHusbandsSuccessors, jealousHusbandsIsGoal, <span style="color: #008000; font-weight: bold">True</span>, <span style="color: #666666">10000</span> )
+<span style="color: #008000; font-weight: bold">if</span> sol:
+    nNodes, maxQueue, trace <span style="color: #666666">=</span> sol
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Solution&#39;</span>, nNodes, <span style="color: #BA2121">&#39;length&#39;</span>, <span style="color: #008000">len</span>(trace), <span style="color: #BA2121">&#39;max queue size&#39;</span>, maxQueue )
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&quot;Solution Trace&quot;</span> )
+    <span style="color: #008000; font-weight: bold">for</span> s <span style="color: #AA22FF; font-weight: bold">in</span> trace:
+        <span style="color: #008000">print</span>( stateToStr( s ) )
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&quot;End of Solution&quot;</span>)
+</pre></div>
+
+</div><!-- end of jb-input-code jb-render -->
+
+</div>
+<div class="jb-print jb-render">
+<div class="jb-output jb-render code" style="text-align:center">
+<div class="jb-stdout code" style="display:inline-block; width:90%">
+<pre >
+Search started [([0, 0, 0, 0, 0, 0, 0], [[0, 0, 0, 0, 0, 0, 0]])]
+Solution 45 length 18 max queue size 24
+Solution Trace
+[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+[Husband 1,Wife 1,Husband 2,Wife 2],[Boat,Husband 3,Wife 3]
+[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+[Husband 1,Wife 1,Husband 2,Husband 3],[Boat,Wife 2,Wife 3]
+[Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+[Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+[Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+[Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+[Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+[Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+[Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+[Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+[Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+[Wife 1,Wife 3],[Boat,Husband 1,Husband 2,Wife 2,Husband 3]
+[Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+[Wife 1],[Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3]
+[Boat,Wife 1,Wife 3],[Husband 1,Husband 2,Wife 2,Husband 3]
+[],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3]
+End of Solution
+</pre>
+</div>
+</div>
+
+</div><!-- end of jb-print jb-render -->
+
+</div>
+<!-- Footer -->
+
+<div class="jb-footer-left plain">
+    <span id="id-e7582abc-2f03-472e-b23e-7481eccc1280" ><span id="id-e7582abc-2f03-472e-b23e-7481eccc1280"><img id="img-id-e7582abc-2f03-472e-b23e-7481eccc1280"     src="assets/images/logo.png"/></span>
+</span>
+
+</div>
+<div class="jb-footer-right plain">
+    <span id="id-ac016447-dd7a-45cb-aa2f-83306ea3b8c5" ><span id="id-ac016447-dd7a-45cb-aa2f-83306ea3b8c5"><img id="img-id-ac016447-dd7a-45cb-aa2f-83306ea3b8c5" width="162" height="138"   src="assets/images/robbi.png"/></span>
+</span>
+
+</div>
+
+<aside class="notes">
+
+</aside>
+
+
+
+</section>
+<section id="slide_00006_frag_00001" data-state="slide_00006_frag_00001">
+
+
+<!-- Header -->
+  
+
+<!-- Background -->
+
+
+<!-- Slide -->
+<div class="jb-slide">
+
+<div class="jb-output-code jb-render">
+
+<!-- start embedded style -->
+
+<!-- end embedded style -->
+<div class="jb-output jb-render">
+
+<h1>Heuristic Function for Jealous Husband Problem</h1>
+
+<div class="jb-text">
+<ul>
+<li>Think about minimum number of moves necessary to solve the puzzle</li>
+<li>Since the boat can only take two people</li>
+<ul>
+<li>I need one move to move two people with the boat</li>
+<li>I need three moves to move three people with the boat</li>
+<li>I need 2*n - 1 moves for n people</li>
+</ul>
+</ul>
+</div>
+</div><!-- end of jb-output jb-render -->
+</div><!-- end of jb-output-code jb-render -->
+
+
+</div>
+<!-- Footer -->
+
+<div class="jb-footer-left plain">
+    <span id="id-d77fcb2c-c388-46b5-ae05-d7640f1c9d86" ><span id="id-d77fcb2c-c388-46b5-ae05-d7640f1c9d86"><img id="img-id-d77fcb2c-c388-46b5-ae05-d7640f1c9d86"     src="assets/images/logo.png"/></span>
+</span>
+
+</div>
+<div class="jb-footer-right plain">
+    <span id="id-5fa6e9f3-c028-4a97-8fbb-5ec9162961a3" ><span id="id-5fa6e9f3-c028-4a97-8fbb-5ec9162961a3"><img id="img-id-5fa6e9f3-c028-4a97-8fbb-5ec9162961a3" width="162" height="138"   src="assets/images/robbi.png"/></span>
+</span>
+
+</div>
+
+<aside class="notes">
+
+</aside>
+
+
+
+</section>
+<section id="slide_00007_frag_00001" data-state="slide_00007_frag_00001">
+
+
+<!-- Header -->
+  
+
+<!-- Background -->
+
+
+<!-- Slide -->
+<div class="jb-slide">
+
+<div class="jb-output-code jb-render">
+
+<!-- start embedded style -->
+
+<!-- end embedded style -->
+<div class="jb-output jb-render">
+
+<h1>Heuristic Function for Jealous Husband Problem</h1>
+
+<div class="jb-text">
+<ul>
+<li>We can also consider the position of the boat</li>
+<li>Three moves need to be added if the boat is on the wrong side of the river</li>
+</ul>
+</div>
+</div><!-- end of jb-output jb-render -->
+</div><!-- end of jb-output-code jb-render -->
+
+
+</div>
+<!-- Footer -->
+
+<div class="jb-footer-left plain">
+    <span id="id-9c2d1271-32a5-4f19-ba93-5317d22275b7" ><span id="id-9c2d1271-32a5-4f19-ba93-5317d22275b7"><img id="img-id-9c2d1271-32a5-4f19-ba93-5317d22275b7"     src="assets/images/logo.png"/></span>
+</span>
+
+</div>
+<div class="jb-footer-right plain">
+    <span id="id-5cfb8a86-cfa5-42b9-a0b7-96c54a81eab4" ><span id="id-5cfb8a86-cfa5-42b9-a0b7-96c54a81eab4"><img id="img-id-5cfb8a86-cfa5-42b9-a0b7-96c54a81eab4" width="162" height="138"   src="assets/images/robbi.png"/></span>
+</span>
+
+</div>
+
+<aside class="notes">
+
+</aside>
+
+
+
+</section>
+<section id="slide_00008_frag_00001" data-state="slide_00008_frag_00001">
+
+
+<!-- Header -->
+  
+
+<!-- Background -->
+
+
+<!-- Slide -->
+<div class="jb-slide">
+<div class="jb-input jb-render jb-code" style="text-align:center">
+
+<!-- start embedded style -->
+
+<!-- end embedded style -->
+<div class="jb-input-code jb-render">
+<div class="highlight" style="background: #f8f8f8; color:#101010;display=inline-block;"><pre style="line-height: 125%"><span></span><span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">math</span>
+
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">jealousHusbandHeuristicSimple</span>( state, goal ):
+    diffCnt <span style="color: #666666">=</span> <span style="color: #666666">0</span>
+    <span style="color: #008000; font-weight: bold">for</span> o <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">range</span>(<span style="color: #666666">1</span>,<span style="color: #008000">len</span>(state)):
+        <span style="color: #008000; font-weight: bold">if</span> state[o] <span style="color: #666666">!=</span> RIGHT:
+            diffCnt <span style="color: #666666">=</span> diffCnt <span style="color: #666666">+</span> <span style="color: #666666">1</span>
+    <span style="color: #008000; font-weight: bold">return</span> math<span style="color: #666666">.</span>ceil(diffCnt<span style="color: #666666">/2</span>)
+</pre></div>
+
+</div><!-- end of jb-input-code jb-render -->
+
+</div>
+
+</div>
+<!-- Footer -->
+
+<div class="jb-footer-left plain">
+    <span id="id-218c78ab-3bb8-4d62-8841-9599f8983571" ><span id="id-218c78ab-3bb8-4d62-8841-9599f8983571"><img id="img-id-218c78ab-3bb8-4d62-8841-9599f8983571"     src="assets/images/logo.png"/></span>
+</span>
+
+</div>
+<div class="jb-footer-right plain">
+    <span id="id-208bc68f-041e-4c2d-a158-ab28594f9922" ><span id="id-208bc68f-041e-4c2d-a158-ab28594f9922"><img id="img-id-208bc68f-041e-4c2d-a158-ab28594f9922" width="162" height="138"   src="assets/images/robbi.png"/></span>
+</span>
+
+</div>
+
+<aside class="notes">
+
+</aside>
+
+
+
+</section>
+<section id="slide_00009_frag_00001" data-state="slide_00009_frag_00001">
+
+
+<!-- Header -->
+  
+
+<!-- Background -->
+
+
+<!-- Slide -->
+<div class="jb-slide">
+<div class="jb-input jb-render jb-code" style="text-align:center">
+
+<!-- start embedded style -->
+
+<!-- end embedded style -->
+<div class="jb-input-code jb-render">
+<div class="highlight" style="background: #f8f8f8; color:#101010;display=inline-block;"><pre style="line-height: 125%"><span></span>sol <span style="color: #666666">=</span> bestFirstSearch( initial, jealousHusbandsSuccessors, jealousHusbandsIsGoal, jealousHusbandHeuristicSimple, <span style="color: #666666">10000</span> )
+<span style="color: #008000; font-weight: bold">if</span> sol:
+    nNodes, maxQueue, trace <span style="color: #666666">=</span> sol
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Solution&#39;</span>, nNodes, <span style="color: #BA2121">&#39;length&#39;</span>, <span style="color: #008000">len</span>(trace), <span style="color: #BA2121">&#39;max queue size&#39;</span>, maxQueue )
+</pre></div>
+
+</div><!-- end of jb-input-code jb-render -->
+
+</div>
+<div class="jb-print jb-render">
+<div class="jb-output jb-render code" style="text-align:center">
+<div class="jb-stdout code" style="display:inline-block; width:90%">
+<pre >
+Search started [([0, 0, 0, 0, 0, 0, 0], [[0, 0, 0, 0, 0, 0, 0]])]
+Num Nodes 1
+[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+2 [Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Husband 1,Wife 1]
+3 [Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Wife 1]
+2 [Husband 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 1,Wife 2]
+2 [Husband 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 1,Wife 3]
+2 [Husband 1,Wife 1,Husband 3,Wife 3],[Boat,Husband 2,Wife 2]
+3 [Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 2]
+2 [Husband 1,Wife 1,Husband 2,Husband 3],[Boat,Wife 2,Wife 3]
+2 [Husband 1,Wife 1,Husband 2,Wife 2],[Boat,Husband 3,Wife 3]
+3 [Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 3]
+Add child [Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Husband 1,Wife 1]
+Add child [Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Wife 1]
+Add child [Husband 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 1,Wife 2]
+Add child [Husband 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 1,Wife 3]
+Add child [Husband 1,Wife 1,Husband 3,Wife 3],[Boat,Husband 2,Wife 2]
+Add child [Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 2]
+Add child [Husband 1,Wife 1,Husband 2,Husband 3],[Boat,Wife 2,Wife 3]
+Add child [Husband 1,Wife 1,Husband 2,Wife 2],[Boat,Husband 3,Wife 3]
+Add child [Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 3]
+Num Nodes 10
+[Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Husband 1,Wife 1]
+3 [Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+Add child [Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+Num Nodes 11
+[Husband 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 1,Wife 2]
+3 [Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+3 [Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+Add child [Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+Num Nodes 13
+[Husband 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 1,Wife 3]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+3 [Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+Add child [Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+Num Nodes 15
+[Husband 1,Wife 1,Husband 3,Wife 3],[Boat,Husband 2,Wife 2]
+3 [Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+Num Nodes 16
+[Husband 1,Wife 1,Husband 2,Husband 3],[Boat,Wife 2,Wife 3]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+3 [Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+Num Nodes 18
+[Husband 1,Wife 1,Husband 2,Wife 2],[Boat,Husband 3,Wife 3]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+Num Nodes 19
+[Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Wife 1]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+Num Nodes 19
+[Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 2]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+Num Nodes 19
+[Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 3]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+Num Nodes 19
+[Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+2 [Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Husband 1,Wife 1]
+2 [Husband 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 1,Wife 2]
+2 [Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+2 [Husband 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 1,Wife 3]
+Add child [Husband 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 1,Wife 2]
+Add child [Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+Add child [Husband 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 1,Wife 3]
+Num Nodes 22
+[Husband 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 1,Wife 2]
+3 [Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+3 [Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+Num Nodes 23
+[Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 2,Husband 3],[Wife 2,Wife 3]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+3 [Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+2 [Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+3 [Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+2 [Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Husband 3],[Wife 2,Wife 3]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+Add child [Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+Add child [Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+Num Nodes 28
+[Husband 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 1,Wife 3]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+3 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+3 [Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+Num Nodes 29
+[Boat,Husband 1,Wife 1,Husband 2,Husband 3],[Wife 2,Wife 3]
+2 [Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+1 [Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+Add child [Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+Num Nodes 30
+[Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 2,Husband 3],[Wife 2,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+Add child [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+Num Nodes 32
+[Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+1 [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+2 [Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+Add child [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+Num Nodes 33
+[Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+2 [Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+2 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+Add child [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Num Nodes 35
+[Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+1 [Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+2 [Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+Add child [Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+Num Nodes 36
+[Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+2 [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+2 [Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+2 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+Add child [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Num Nodes 38
+[Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+1 [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+1 [Wife 1,Wife 2],[Boat,Husband 1,Husband 2,Husband 3,Wife 3]
+1 [Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+Add child [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+Add child [Wife 1,Wife 2],[Boat,Husband 1,Husband 2,Husband 3,Wife 3]
+Num Nodes 40
+[Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+2 [Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+2 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+Add child [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Num Nodes 42
+[Wife 1,Wife 2],[Boat,Husband 1,Husband 2,Husband 3,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+2 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Add child [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Num Nodes 43
+[Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+1 [Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+1 [Wife 1,Wife 3],[Boat,Husband 1,Husband 2,Wife 2,Husband 3]
+1 [Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+Add child [Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+Add child [Wife 1,Wife 3],[Boat,Husband 1,Husband 2,Wife 2,Husband 3]
+Num Nodes 45
+[Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+2 [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+2 [Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+2 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+Add child [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Num Nodes 47
+[Wife 1,Wife 3],[Boat,Husband 1,Husband 2,Wife 2,Husband 3]
+2 [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+2 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Add child [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Num Nodes 48
+[Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+1 [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+1 [Wife 1,Wife 2],[Boat,Husband 1,Husband 2,Husband 3,Wife 3]
+1 [Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+Add child [Wife 1,Wife 2],[Boat,Husband 1,Husband 2,Husband 3,Wife 3]
+Add child [Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+Num Nodes 50
+[Wife 1,Wife 2],[Boat,Husband 1,Husband 2,Husband 3,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+2 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Add child [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Num Nodes 51
+[Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 2,Husband 3],[Wife 2,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Husband 3],[Wife 2,Wife 3]
+Add child [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+Num Nodes 53
+[Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+1 [Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+1 [Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+1 [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+Add child [Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+Add child [Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+Num Nodes 55
+[Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+2 [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+2 [Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+2 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+Add child [Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+Num Nodes 57
+[Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+2 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+2 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Num Nodes 58
+[Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+1 [Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+1 [Wife 1,Wife 3],[Boat,Husband 1,Husband 2,Wife 2,Husband 3]
+1 [Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+Add child [Wife 1,Wife 3],[Boat,Husband 1,Husband 2,Wife 2,Husband 3]
+Add child [Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+Num Nodes 60
+[Wife 1,Wife 3],[Boat,Husband 1,Husband 2,Wife 2,Husband 3]
+2 [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+2 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Add child [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Num Nodes 61
+[Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 2,Husband 3],[Wife 2,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Husband 3],[Wife 2,Wife 3]
+Num Nodes 63
+[Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+1 [Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+1 [Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+1 [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+Add child [Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+Add child [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+Num Nodes 65
+[Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+2 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+2 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Num Nodes 66
+[Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+2 [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+2 [Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+2 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+Add child [Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+Num Nodes 68
+[Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+1 [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+2 [Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+Num Nodes 68
+[Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+1 [Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+1 [Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+1 [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+Add child [Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+Add child [Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+Num Nodes 70
+[Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+2 [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+2 [Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+2 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+Add child [Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+Num Nodes 72
+[Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+2 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+2 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Num Nodes 73
+[Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+1 [Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+1 [Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3]
+1 [Wife 2],[Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3]
+1 [Wife 1,Wife 3],[Boat,Husband 1,Husband 2,Wife 2,Husband 3]
+1 [Wife 1],[Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3]
+1 [Wife 1,Wife 2],[Boat,Husband 1,Husband 2,Husband 3,Wife 3]
+Add child [Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+Add child [Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3]
+Add child [Wife 2],[Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3]
+Add child [Wife 1,Wife 3],[Boat,Husband 1,Husband 2,Wife 2,Husband 3]
+Add child [Wife 1],[Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3]
+Num Nodes 78
+[Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+2 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+2 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Num Nodes 79
+[Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3]
+1 [Boat,Wife 1,Wife 3],[Husband 1,Husband 2,Wife 2,Husband 3]
+2 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+1 [Boat,Wife 2,Wife 3],[Husband 1,Wife 1,Husband 2,Husband 3]
+1 [Boat,Husband 3,Wife 3],[Husband 1,Wife 1,Husband 2,Wife 2]
+Add child [Boat,Wife 1,Wife 3],[Husband 1,Husband 2,Wife 2,Husband 3]
+Add child [Boat,Wife 2,Wife 3],[Husband 1,Wife 1,Husband 2,Husband 3]
+Add child [Boat,Husband 3,Wife 3],[Husband 1,Wife 1,Husband 2,Wife 2]
+Num Nodes 82
+[Wife 2],[Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3]
+1 [Boat,Wife 1,Wife 2],[Husband 1,Husband 2,Husband 3,Wife 3]
+2 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+1 [Boat,Husband 2,Wife 2],[Husband 1,Wife 1,Husband 3,Wife 3]
+1 [Boat,Wife 2,Wife 3],[Husband 1,Wife 1,Husband 2,Husband 3]
+Add child [Boat,Wife 1,Wife 2],[Husband 1,Husband 2,Husband 3,Wife 3]
+Add child [Boat,Husband 2,Wife 2],[Husband 1,Wife 1,Husband 3,Wife 3]
+Add child [Boat,Wife 2,Wife 3],[Husband 1,Wife 1,Husband 2,Husband 3]
+Num Nodes 85
+[Wife 1,Wife 3],[Boat,Husband 1,Husband 2,Wife 2,Husband 3]
+2 [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+2 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Add child [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+Num Nodes 86
+[Wife 1],[Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3]
+1 [Boat,Husband 1,Wife 1],[Husband 2,Wife 2,Husband 3,Wife 3]
+1 [Boat,Wife 1,Wife 2],[Husband 1,Husband 2,Husband 3,Wife 3]
+2 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+1 [Boat,Wife 1,Wife 3],[Husband 1,Husband 2,Wife 2,Husband 3]
+Add child [Boat,Husband 1,Wife 1],[Husband 2,Wife 2,Husband 3,Wife 3]
+Add child [Boat,Wife 1,Wife 2],[Husband 1,Husband 2,Husband 3,Wife 3]
+Add child [Boat,Wife 1,Wife 3],[Husband 1,Husband 2,Wife 2,Husband 3]
+Num Nodes 89
+[Boat,Wife 1,Wife 3],[Husband 1,Husband 2,Wife 2,Husband 3]
+1 [Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3]
+0 [],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3]
+1 [Wife 1],[Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3]
+Add child [],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3]
+Add child [Wife 1],[Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3]
+Num Nodes 91
+[],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3]
+Solution 91 length 12 max queue size 42
+</pre>
+</div>
+</div>
+
+</div><!-- end of jb-print jb-render -->
+
+</div>
+<!-- Footer -->
+
+<div class="jb-footer-left plain">
+    <span id="id-40989931-9589-4c8b-9556-797d5313a9be" ><span id="id-40989931-9589-4c8b-9556-797d5313a9be"><img id="img-id-40989931-9589-4c8b-9556-797d5313a9be"     src="assets/images/logo.png"/></span>
+</span>
+
+</div>
+<div class="jb-footer-right plain">
+    <span id="id-3d773a04-c0fa-441e-9f9c-3ba73d6586b6" ><span id="id-3d773a04-c0fa-441e-9f9c-3ba73d6586b6"><img id="img-id-3d773a04-c0fa-441e-9f9c-3ba73d6586b6" width="162" height="138"   src="assets/images/robbi.png"/></span>
+</span>
+
+</div>
+
+<aside class="notes">
+
+</aside>
+
+
+
+</section>
+<section id="slide_00010_frag_00001" data-state="slide_00010_frag_00001">
+
+
+<!-- Header -->
+  
+
+<!-- Background -->
+
+
+<!-- Slide -->
+<div class="jb-slide">
+
+<div class="jb-output-code jb-render">
+
+<!-- start embedded style -->
+
+<!-- end embedded style -->
+<div class="jb-output jb-render">
+
+<h1>Heuristics</h1>
+
+<div class="jb-text">
+<p>In general, Best-first is <b>not</b> guaranteed to return the optimal solution</p>
+
+<p>As can be seen in the following example</p>
+
+<div style="text-align:center">
+<span id="id-0311eefa-a582-414e-bda9-481a86c1b68b" ><span id="id-0311eefa-a582-414e-bda9-481a86c1b68b"><img id="img-id-0311eefa-a582-414e-bda9-481a86c1b68b"     src="assets/images/g2.svg"/></span>
+</span>
+
+</div>
+</div>
+</div><!-- end of jb-output jb-render -->
+</div><!-- end of jb-output-code jb-render -->
+
+
+</div>
+<!-- Footer -->
+
+<div class="jb-footer-left plain">
+    <span id="id-be73d2bc-d76e-4d38-916f-e7db95abab25" ><span id="id-be73d2bc-d76e-4d38-916f-e7db95abab25"><img id="img-id-be73d2bc-d76e-4d38-916f-e7db95abab25"     src="assets/images/logo.png"/></span>
+</span>
+
+</div>
+<div class="jb-footer-right plain">
+    <span id="id-792f57e7-c7c7-40b6-81dd-a7205f5b38e8" ><span id="id-792f57e7-c7c7-40b6-81dd-a7205f5b38e8"><img id="img-id-792f57e7-c7c7-40b6-81dd-a7205f5b38e8" width="162" height="138"   src="assets/images/robbi.png"/></span>
+</span>
+
+</div>
+
+<aside class="notes">
+
+</aside>
+
+
+
+</section>
+<section id="slide_00011_frag_00001" data-state="slide_00011_frag_00001">
+
+
+<!-- Header -->
+  
+
+<!-- Background -->
+
+
+<!-- Slide -->
+<div class="jb-slide">
+<div class="jb-input jb-render jb-code" style="text-align:center">
+
+<!-- start embedded style -->
+
+<!-- end embedded style -->
+<div class="jb-input-code jb-render">
+<div class="highlight" style="background: #f8f8f8; color:#101010;display=inline-block;"><pre style="line-height: 125%"><span></span><span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">math</span>
+
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">jealousHusbandHeuristicComplex</span>( state, goal ):
+    diffCnt <span style="color: #666666">=</span> <span style="color: #666666">0</span>
+    <span style="color: #008000; font-weight: bold">for</span> o <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">range</span>(<span style="color: #666666">1</span>,<span style="color: #008000">len</span>(state)):
+        <span style="color: #008000; font-weight: bold">if</span> state[o] <span style="color: #666666">!=</span> RIGHT:
+            diffCnt <span style="color: #666666">=</span> diffCnt <span style="color: #666666">+</span> <span style="color: #666666">1</span>
+    <span style="color: #008000; font-weight: bold">if</span> state[<span style="color: #666666">0</span>] <span style="color: #666666">!=</span> RIGHT:
+      add_moves <span style="color: #666666">=</span> <span style="color: #666666">0</span>
+    <span style="color: #008000; font-weight: bold">else</span>:
+      diffCnt <span style="color: #666666">=</span> diffCnt <span style="color: #666666">+</span> <span style="color: #666666">1</span>
+      add_moves <span style="color: #666666">=</span> <span style="color: #666666">1</span>
+    <span style="color: #008000; font-weight: bold">return</span> add_moves <span style="color: #666666">+</span> math<span style="color: #666666">.</span>ceil(diffCnt<span style="color: #666666">*2-1</span>)
+</pre></div>
+
+</div><!-- end of jb-input-code jb-render -->
+
+</div>
+
+</div>
+<!-- Footer -->
+
+<div class="jb-footer-left plain">
+    <span id="id-069bc1ae-4c95-4b1e-80c9-a121c69dc7ba" ><span id="id-069bc1ae-4c95-4b1e-80c9-a121c69dc7ba"><img id="img-id-069bc1ae-4c95-4b1e-80c9-a121c69dc7ba"     src="assets/images/logo.png"/></span>
+</span>
+
+</div>
+<div class="jb-footer-right plain">
+    <span id="id-299c3cb9-988b-4b0c-83c0-6f7b7e337a06" ><span id="id-299c3cb9-988b-4b0c-83c0-6f7b7e337a06"><img id="img-id-299c3cb9-988b-4b0c-83c0-6f7b7e337a06" width="162" height="138"   src="assets/images/robbi.png"/></span>
+</span>
+
+</div>
+
+<aside class="notes">
+
+</aside>
+
+
+
+</section>
+<section id="slide_00012_frag_00001" data-state="slide_00012_frag_00001">
+
+
+<!-- Header -->
+  
+
+<!-- Background -->
+
+
+<!-- Slide -->
+<div class="jb-slide">
+<div class="jb-input jb-render jb-code" style="text-align:center">
+
+<!-- start embedded style -->
+
+<!-- end embedded style -->
+<div class="jb-input-code jb-render">
+<div class="highlight" style="background: #f8f8f8; color:#101010;display=inline-block;"><pre style="line-height: 125%"><span></span>sol <span style="color: #666666">=</span> bestFirstSearch( initial, jealousHusbandsSuccessors, jealousHusbandsIsGoal, jealousHusbandHeuristicComplex, <span style="color: #666666">10000</span> )
+<span style="color: #008000; font-weight: bold">if</span> sol:
+    nNodes, maxQueue, trace <span style="color: #666666">=</span> sol
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Solution&#39;</span>, nNodes, <span style="color: #BA2121">&#39;length&#39;</span>, <span style="color: #008000">len</span>(trace), <span style="color: #BA2121">&#39;max queue size&#39;</span>, maxQueue )
+</pre></div>
+
+</div><!-- end of jb-input-code jb-render -->
+
+</div>
+<div class="jb-print jb-render">
+<div class="jb-output jb-render code" style="text-align:center">
+<div class="jb-stdout code" style="display:inline-block; width:90%">
+<pre >
+Search started [([0, 0, 0, 0, 0, 0, 0], [[0, 0, 0, 0, 0, 0, 0]])]
+Num Nodes 1
+[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+10 [Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Husband 1,Wife 1]
+12 [Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Wife 1]
+10 [Husband 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 1,Wife 2]
+10 [Husband 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 1,Wife 3]
+10 [Husband 1,Wife 1,Husband 3,Wife 3],[Boat,Husband 2,Wife 2]
+12 [Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 2]
+10 [Husband 1,Wife 1,Husband 2,Husband 3],[Boat,Wife 2,Wife 3]
+10 [Husband 1,Wife 1,Husband 2,Wife 2],[Boat,Husband 3,Wife 3]
+12 [Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 3]
+Add child [Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Husband 1,Wife 1]
+Add child [Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Wife 1]
+Add child [Husband 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 1,Wife 2]
+Add child [Husband 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 1,Wife 3]
+Add child [Husband 1,Wife 1,Husband 3,Wife 3],[Boat,Husband 2,Wife 2]
+Add child [Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 2]
+Add child [Husband 1,Wife 1,Husband 2,Husband 3],[Boat,Wife 2,Wife 3]
+Add child [Husband 1,Wife 1,Husband 2,Wife 2],[Boat,Husband 3,Wife 3]
+Add child [Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 3]
+Num Nodes 10
+[Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Husband 1,Wife 1]
+9 [Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+11 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3],[]
+Add child [Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+Num Nodes 11
+[Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+10 [Husband 2,Wife 2,Husband 3,Wife 3],[Boat,Husband 1,Wife 1]
+10 [Husband 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 1,Wife 2]
+8 [Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+10 [Husband 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 1,Wife 3]
+Add child [Husband 1,Husband 2,Husband 3,Wife 3],[Boat,Wife 1,Wife 2]
+Add child [Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+Add child [Husband 1,Husband 2,Wife 2,Husband 3],[Boat,Wife 1,Wife 3]
+Num Nodes 14
+[Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+7 [Boat,Husband 1,Wife 1,Husband 2,Husband 3],[Wife 2,Wife 3]
+9 [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+9 [Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+7 [Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+9 [Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3],[Wife 1]
+7 [Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Husband 3],[Wife 2,Wife 3]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3],[Wife 3]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3],[Wife 2]
+Add child [Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+Add child [Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+Num Nodes 19
+[Boat,Husband 1,Wife 1,Husband 2,Husband 3],[Wife 2,Wife 3]
+8 [Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+6 [Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+Add child [Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+Num Nodes 20
+[Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+7 [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+7 [Boat,Husband 1,Wife 1,Husband 2,Husband 3],[Wife 2,Wife 3]
+7 [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+Add child [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+Num Nodes 22
+[Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+6 [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+8 [Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+Add child [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+Num Nodes 23
+[Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+7 [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+7 [Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+7 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+Add child [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Num Nodes 25
+[Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+6 [Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+8 [Husband 1,Husband 2,Husband 3],[Boat,Wife 1,Wife 2,Wife 3]
+Add child [Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+Num Nodes 26
+[Husband 3,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2]
+7 [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+7 [Boat,Husband 1,Husband 2,Husband 3,Wife 3],[Wife 1,Wife 2]
+7 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Husband 1,Wife 1,Husband 3,Wife 3],[Husband 2,Wife 2]
+Add child [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Num Nodes 28
+[Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+6 [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+6 [Wife 1,Wife 2],[Boat,Husband 1,Husband 2,Husband 3,Wife 3]
+6 [Husband 1,Wife 1],[Boat,Husband 2,Wife 2,Husband 3,Wife 3]
+Add child [Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+Add child [Wife 1,Wife 2],[Boat,Husband 1,Husband 2,Husband 3,Wife 3]
+Num Nodes 30
+[Husband 2,Wife 2],[Boat,Husband 1,Wife 1,Husband 3,Wife 3]
+7 [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+7 [Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+7 [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Add child [Boat,Husband 1,Husband 2,Wife 2,Husband 3],[Wife 1,Wife 3]
+Add child [Boat,Husband 2,Wife 2,Husband 3,Wife 3],[Husband 1,Wife 1]
+Num Nodes 32
+[Wife 1,Wife 2],[Boat,Husband 1,Husband 2,Husband 3,Wife 3]
+7 [Boat,Husband 1,Wife 1,Husband 2,Wife 2],[Husband 3,Wife 3]
+5 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Add child [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+Num Nodes 33
+[Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+6 [Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+4 [Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3]
+4 [Wife 2],[Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3]
+6 [Wife 1,Wife 3],[Boat,Husband 1,Husband 2,Wife 2,Husband 3]
+4 [Wife 1],[Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3]
+6 [Wife 1,Wife 2],[Boat,Husband 1,Husband 2,Husband 3,Wife 3]
+Add child [Wife 2,Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Husband 3]
+Add child [Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3]
+Add child [Wife 2],[Boat,Husband 1,Wife 1,Husband 2,Husband 3,Wife 3]
+Add child [Wife 1,Wife 3],[Boat,Husband 1,Husband 2,Wife 2,Husband 3]
+Add child [Wife 1],[Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3]
+Num Nodes 38
+[Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3]
+3 [Boat,Wife 1,Wife 3],[Husband 1,Husband 2,Wife 2,Husband 3]
+5 [Boat,Wife 1,Wife 2,Wife 3],[Husband 1,Husband 2,Husband 3]
+3 [Boat,Wife 2,Wife 3],[Husband 1,Wife 1,Husband 2,Husband 3]
+3 [Boat,Husband 3,Wife 3],[Husband 1,Wife 1,Husband 2,Wife 2]
+Add child [Boat,Wife 1,Wife 3],[Husband 1,Husband 2,Wife 2,Husband 3]
+Add child [Boat,Wife 2,Wife 3],[Husband 1,Wife 1,Husband 2,Husband 3]
+Add child [Boat,Husband 3,Wife 3],[Husband 1,Wife 1,Husband 2,Wife 2]
+Num Nodes 41
+[Boat,Wife 1,Wife 3],[Husband 1,Husband 2,Wife 2,Husband 3]
+4 [Wife 3],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3]
+2 [],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3]
+4 [Wife 1],[Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3]
+Add child [],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3]
+Add child [Wife 1],[Boat,Husband 1,Husband 2,Wife 2,Husband 3,Wife 3]
+Num Nodes 43
+[],[Boat,Husband 1,Wife 1,Husband 2,Wife 2,Husband 3,Wife 3]
+Solution 43 length 12 max queue size 27
+</pre>
+</div>
+</div>
+
+</div><!-- end of jb-print jb-render -->
+
+</div>
+<!-- Footer -->
+
+<div class="jb-footer-left plain">
+    <span id="id-664ba4da-219e-4a6b-8247-f48829735171" ><span id="id-664ba4da-219e-4a6b-8247-f48829735171"><img id="img-id-664ba4da-219e-4a6b-8247-f48829735171"     src="assets/images/logo.png"/></span>
+</span>
+
+</div>
+<div class="jb-footer-right plain">
+    <span id="id-7a38189a-b063-4365-aaf2-4e5070616889" ><span id="id-7a38189a-b063-4365-aaf2-4e5070616889"><img id="img-id-7a38189a-b063-4365-aaf2-4e5070616889" width="162" height="138"   src="assets/images/robbi.png"/></span>
+</span>
+
+</div>
+
+<aside class="notes">
+
+</aside>
+
+
+
+</section>
+<section id="slide_00013_frag_00001" data-state="slide_00013_frag_00001">
+
+
+<!-- Header -->
+  
+
+<!-- Background -->
+
+
+<!-- Slide -->
+<div class="jb-slide">
+
+<div class="jb-output-code jb-render">
+
+<!-- start embedded style -->
+
+<!-- end embedded style -->
+<div class="jb-output jb-render">
+
+<h1>Comparison of Heuristic Functions</h1>
+
+<div class="jb-text">
+<ul>
+<li>In this case, the <code>jealousHusbandHeuristicComplex</code> function outperformed
+the <code>jealousHusbandHeuristicSimple</code> heuristic function</li>
+<li>In general, the more accurate the heuristic is, the better it will be able to
+guide the search</li>
+<li>However, there is a balance as well because a more complex heuristic usually
+requires more processing per node. So each node expansion will be slower</li>
+</ul>
+</div>
+</div><!-- end of jb-output jb-render -->
+</div><!-- end of jb-output-code jb-render -->
+
+
+</div>
+<!-- Footer -->
+
+<div class="jb-footer-left plain">
+    <span id="id-eeb59714-f75e-4b65-8083-2dc863aa73fc" ><span id="id-eeb59714-f75e-4b65-8083-2dc863aa73fc"><img id="img-id-eeb59714-f75e-4b65-8083-2dc863aa73fc"     src="assets/images/logo.png"/></span>
+</span>
+
+</div>
+<div class="jb-footer-right plain">
+    <span id="id-3d004f36-1904-4b6d-b897-5a137c502849" ><span id="id-3d004f36-1904-4b6d-b897-5a137c502849"><img id="img-id-3d004f36-1904-4b6d-b897-5a137c502849" width="162" height="138"   src="assets/images/robbi.png"/></span>
+</span>
+
+</div>
+
+<aside class="notes">
+
+</aside>
+
+
+
+</section>
+        </div>
+        </div>
+
+        <script src="js/reveal.js"></script>
+
+        <script>
+            // More info about config & dependencies:
+            // - https://github.com/hakimel/reveal.js#configuration
+            // - https://github.com/hakimel/reveal.js#dependencies
+            Reveal.initialize({
+                math: {
+                    mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+                    config: 'TeX-AMS_HTML-full',  // See http://docs.mathjax.org/en/latest/config-files.html
+                    // tex2jax: {
+                    //     inlineMath: [['$', '$'], ['\(', '\)']],
+                    //     displayMath: [['$$', '$$'], ['\[', '\]']],
+                    //     processEscapes: true,
+                    //     processEnvironments: true,
+                    //     skipTags: ['script', 'noscript', 'style', 'textarea', 'code', 'pre'],
+                    //     displayAlign: 'center',
+                    // }                
+                },
+                dependencies: [
+                    { src: 'plugin/markdown/marked.js' },
+                    { src: 'plugin/markdown/markdown.js' },
+                    { src: 'plugin/notes/notes.js', async: true },
+                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'plugin/math/math.js', async: true }
+                ]
+            });
+        </script>
+
+        <script>
+            <!-- Assets -->
+var assets = {
+"robbi" : new JBImage( "robbi", "12677", "162", "138", null, null, "assets/images/robbi", "png" ),
+"logo" : new JBImage( "logo", "12033", "0", "0", null, null, "assets/images/logo", "png" ),
+"fira-logo-1" : new JBImage( "fira-logo-1", "93836", "0", "0", null, null, "assets/images/FIRA-logo-1", "png" ),
+"pairLogo" : new JBImage( "pairLogo", "63051", "0", "0", null, null, "assets/images/pairLogo", "png" ),
+"g2" : new JBImage( "g2", "12739", "0", "0", null, null, "assets/images/g2", "svg" ) 
+};
+var assetInstances = {
+    "id-ba8c3b9e-5d33-4e53-9da3-5fe26d2183a6": assets["robbi"],
+    "id-ae7fd0e5-31d5-4a10-b4a7-ab5596a9c3d6": assets["robbi"],
+    "id-d7476cc0-3916-4016-b297-24412f270c17": assets["robbi"],
+    "id-ac016447-dd7a-45cb-aa2f-83306ea3b8c5": assets["robbi"],
+    "id-5fa6e9f3-c028-4a97-8fbb-5ec9162961a3": assets["robbi"],
+    "id-5cfb8a86-cfa5-42b9-a0b7-96c54a81eab4": assets["robbi"],
+    "id-208bc68f-041e-4c2d-a158-ab28594f9922": assets["robbi"],
+    "id-3d773a04-c0fa-441e-9f9c-3ba73d6586b6": assets["robbi"],
+    "id-792f57e7-c7c7-40b6-81dd-a7205f5b38e8": assets["robbi"],
+    "id-299c3cb9-988b-4b0c-83c0-6f7b7e337a06": assets["robbi"],
+    "id-7a38189a-b063-4365-aaf2-4e5070616889": assets["robbi"],
+    "id-3d004f36-1904-4b6d-b897-5a137c502849": assets["robbi"],
+    "id-342590aa-c9bd-4d22-9ab7-567857fcb5c5": assets["logo"],
+    "id-5cac756a-ea5b-440d-95f9-6d2b4a5a3b6a": assets["logo"],
+    "id-5e348a3b-a766-4cff-abb7-c2ffbe41278f": assets["logo"],
+    "id-e7582abc-2f03-472e-b23e-7481eccc1280": assets["logo"],
+    "id-d77fcb2c-c388-46b5-ae05-d7640f1c9d86": assets["logo"],
+    "id-9c2d1271-32a5-4f19-ba93-5317d22275b7": assets["logo"],
+    "id-218c78ab-3bb8-4d62-8841-9599f8983571": assets["logo"],
+    "id-40989931-9589-4c8b-9556-797d5313a9be": assets["logo"],
+    "id-be73d2bc-d76e-4d38-916f-e7db95abab25": assets["logo"],
+    "id-069bc1ae-4c95-4b1e-80c9-a121c69dc7ba": assets["logo"],
+    "id-664ba4da-219e-4a6b-8247-f48829735171": assets["logo"],
+    "id-eeb59714-f75e-4b65-8083-2dc863aa73fc": assets["logo"],
+    "id-0311eefa-a582-414e-bda9-481a86c1b68b": assets["g2"]
+};
+<!-- End of Assets -->
+
+            convertURLs(assetInstances, "smart-path");
+        </script>
+        <script>
+            <!-- Characters -->
+var characters =
+{};
+<!-- End of Characters -->
+
+        </script>
+    </body>
+</html>
